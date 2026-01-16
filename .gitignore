@@ -35,3 +35,7 @@ db.sqlite3
 # Secrets
 .env
 .env.*
+
+# SSH keys
+*.pem
+*.key
