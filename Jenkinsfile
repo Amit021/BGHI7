@@ -6,8 +6,6 @@ pipeline {
   }
 
   triggers {
-    // Jenkins running on a laptop is usually not reachable by GitHub webhooks.
-    // Polling still gives fully automatic builds shortly after a push.
     pollSCM('H/2 * * * *')
   }
 
@@ -15,13 +13,10 @@ pipeline {
     VENV_DIR = '.venv'
     PYTHON = "${VENV_DIR}/bin/python"
     PIP = "${VENV_DIR}/bin/pip"
-
-    // PythonAnywhere SSH deploy settings
-    PA_HOST = 'ssh.pythonanywhere.com'
-    // Set this in Jenkins job config (e.g. "amit21")
-    PA_USER = "${env.PA_USER}"
-    // Script to run on PythonAnywhere (create it once in your PythonAnywhere home dir)
-    PA_DEPLOY_SCRIPT = "${env.PA_DEPLOY_SCRIPT ?: '~/deploy_bghi7.sh'}"
+    
+    // App deployment settings
+    APP_DIR = '/opt/bghi7'
+    APP_USER = 'ubuntu'
   }
 
   stages {
@@ -72,28 +67,94 @@ pipeline {
       }
     }
 
-    stage('Deploy to PythonAnywhere') {
+    stage('Deploy App') {
       when {
-        allOf {
-          branch 'main'
-          expression { return env.PA_USER?.trim() }
-        }
+        branch 'main'
       }
       steps {
-        // Requires Jenkins plugin: "SSH Agent"
-        sshagent(credentials: ['pythonanywhere-ssh']) {
-          sh '''
-            set -e
-            mkdir -p ~/.ssh
-            chmod 700 ~/.ssh
+        sh '''
+          set -e
+          
+          # Create app directory if it doesn't exist
+          sudo mkdir -p "$APP_DIR"
+          sudo chown "$APP_USER:$APP_USER" "$APP_DIR"
+          
+          # Sync app files (excluding .git, __pycache__, .venv, db.sqlite3)
+          rsync -av --delete \
+            --exclude '.git' \
+            --exclude '__pycache__' \
+            --exclude '.venv' \
+            --exclude 'coverage_html' \
+            --exclude 'coverage.xml' \
+            --exclude '*.pyc' \
+            . "$APP_DIR/"
+          
+          # Setup venv in app directory
+          cd "$APP_DIR"
+          python3 -m venv venv
+          venv/bin/pip install --upgrade pip
+          venv/bin/pip install -r requirements.txt
+          venv/bin/pip install gunicorn
+          
+          # Run migrations
+          venv/bin/python manage.py migrate --noinput
+          
+          # Collect static files
+          venv/bin/python manage.py collectstatic --noinput
+          
+          # Setup systemd service for gunicorn
+          sudo tee /etc/systemd/system/bghi7.service > /dev/null << 'SERVICEEOF'
+[Unit]
+Description=BGHI7 Django App (Gunicorn)
+After=network.target
 
-            # Avoid interactive host key prompt on first connection
-            ssh-keyscan -H "$PA_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+[Service]
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/opt/bghi7
+Environment="DJANGO_SECRET_KEY=jenkins-prod-secret-change-me-12345"
+Environment="DJANGO_DEBUG=False"
+Environment="DJANGO_ALLOWED_HOSTS=*"
+ExecStart=/opt/bghi7/venv/bin/gunicorn --workers 2 --bind 127.0.0.1:8000 webappname.wsgi:application
+Restart=always
+RestartSec=3
 
-            # -tt forces a PTY (some restricted hosts require it)
-            ssh -tt "$PA_USER@$PA_HOST" "bash -lc $PA_DEPLOY_SCRIPT"
-          '''
-        }
+[Install]
+WantedBy=multi-user.target
+SERVICEEOF
+          
+          # Setup nginx
+          sudo tee /etc/nginx/sites-available/bghi7 > /dev/null << 'NGINXEOF'
+server {
+    listen 80;
+    server_name _;
+
+    location /static/ {
+        alias /opt/bghi7/staticfiles/;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+NGINXEOF
+          
+          # Enable site and restart services
+          sudo ln -sf /etc/nginx/sites-available/bghi7 /etc/nginx/sites-enabled/bghi7
+          sudo rm -f /etc/nginx/sites-enabled/default
+          sudo nginx -t
+          sudo systemctl daemon-reload
+          sudo systemctl enable bghi7
+          sudo systemctl restart bghi7
+          sudo systemctl restart nginx
+          
+          echo "✅ App deployed successfully!"
+          echo "🌐 Visit: http://$(curl -s ifconfig.me)"
+        '''
       }
     }
   }
