@@ -1,0 +1,98 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+  <main class="profile-page layout layout--3">
+    <div class="container">
+      <!-- Topics Start -->
+      {% include 'base/topics_component.html' %}
+      <!-- Topics End -->
+
+      <!-- Room List Start -->
+      <div class="roomList">
+        <div class="profile">
+          <div class="profile__avatar">
+            <div class="avatar avatar--large active">
+              {% if request.user.avatar %}
+                <img src="{{ request.user.avatar.url }}" />
+              {% else %}
+                <img src="{% static 'images/avatar.svg' %}" />
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="profile__info">
+            <h3>{{ request.user.username }}</h3>
+            <p>@{{ request.user.username }}</p>
+          </div>
+
+          <div class="profile__about">
+            <h3>Edit Profile</h3>
+
+            <form class="form" method="POST" enctype="multipart/form-data">
+              {% csrf_token %}
+
+              {# Non-field errors #}
+              {% if form.non_field_errors %}
+                <div class="form__errors">
+                  {{ form.non_field_errors }}
+                </div>
+              {% endif %}
+
+              <div class="form__group">
+                <label for="{{ form.avatar.id_for_label }}">Avatar</label>
+                {{ form.avatar }}
+                {% for error in form.avatar.errors %}
+                  <p class="form__error">{{ error }}</p>
+                {% endfor %}
+              </div>
+
+              <div class="form__group">
+                <label for="{{ form.name.id_for_label }}">Name</label>
+                {{ form.name }}
+                {% for error in form.name.errors %}
+                  <p class="form__error">{{ error }}</p>
+                {% endfor %}
+              </div>
+
+              <div class="form__group">
+                <label for="{{ form.username.id_for_label }}">Username</label>
+                {{ form.username }}
+                {% for error in form.username.errors %}
+                  <p class="form__error">{{ error }}</p>
+                {% endfor %}
+              </div>
+
+              <div class="form__group">
+                <label for="{{ form.email.id_for_label }}">Email</label>
+                {{ form.email }}
+                {% for error in form.email.errors %}
+                  <p class="form__error">{{ error }}</p>
+                {% endfor %}
+              </div>
+
+              <div class="form__group">
+                <label for="{{ form.bio.id_for_label }}">Bio (optional)</label>
+                {{ form.bio }}
+                {% for error in form.bio.errors %}
+                  <p class="form__error">{{ error }}</p>
+                {% endfor %}
+              </div>
+
+              <div style="display:flex; gap:1rem; align-items:center;">
+                <a class="btn btn--dark btn--pill" href="{% url 'user-profile' request.user.id %}">Cancel</a>
+                <button class="btn btn--main btn--pill" type="submit">Save</button>
+              </div>
+
+            </form>
+          </div>
+        </div>
+      </div>
+      <!-- Room List End -->
+
+      <!-- Activities Start -->
+      {% include 'base/activity_component.html' %}
+      <!-- Activities End -->
+    </div>
+  </main>
+{% endblock content %}

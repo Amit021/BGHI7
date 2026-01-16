@@ -250,7 +250,21 @@ def updateUser(request):
             form.save()
             return redirect('user-profile', pk=user.id)
 
-    return render(request, 'base/update-user.html', {'form': form})
+    # Topics for the left sidebar
+    topics = _restrict_jobs_referrals_topics(Topic.objects.all(), request.user)
+
+    # Activity for the right sidebar
+    room_messages = Message.objects.all().order_by('-created')
+    if not _user_can_access_jobs_referrals(request.user):
+        room_messages = room_messages.exclude(room__topic__slug=JOBS_REFERRALS_SLUG)
+
+    context = {
+        'form': form,
+        'topics': topics,
+        'room_messages': room_messages,
+    }
+    return render(request, 'base/update-user.html', context)
+
 
 @login_required(login_url='login')
 def topicsPage(request):

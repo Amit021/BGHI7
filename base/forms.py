@@ -80,3 +80,12 @@ class UserForm(ModelForm):
     class Meta:
         model = User
         fields = ['avatar', 'name', 'username', 'email', 'bio']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Bio should be optional
+        self.fields['bio'].required = False
+
+        # Avatar should be optional too (usually)
+        self.fields['avatar'].required = False
