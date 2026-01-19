@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CI/CD Pipeline Presentation - BGHI7</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #1a1a2e;
+      color: #eee;
+      overflow: hidden;
+    }
+    
+    .slide {
+      display: none;
+      width: 100vw;
+      height: 100vh;
+      padding: 60px 80px;
+      position: relative;
+    }
+    
+    .slide.active { display: flex; flex-direction: column; }
+    
+    .slide-title {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    
+    .slide-title h1 {
+      font-size: 3.5rem;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .slide-title h2 {
+      font-size: 1.8rem;
+      font-weight: 300;
+      opacity: 0.9;
+    }
+    
+    .slide-title .subtitle {
+      margin-top: 40px;
+      font-size: 1.2rem;
+      opacity: 0.7;
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 40px;
+      color: #667eea;
+      border-bottom: 3px solid #667eea;
+      padding-bottom: 15px;
+    }
+    
+    h2 {
+      font-size: 1.8rem;
+      margin: 30px 0 20px;
+      color: #a78bfa;
+    }
+    
+    h3 {
+      font-size: 1.4rem;
+      margin: 20px 0 15px;
+      color: #60a5fa;
+    }
+    
+    ul {
+      margin-left: 40px;
+      line-height: 2;
+      font-size: 1.3rem;
+    }
+    
+    li { margin: 10px 0; }
+    
+    .content { flex: 1; overflow: auto; }
+    
+    .two-column {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      height: 100%;
+    }
+    
+    .three-column {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 40px;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 1.1rem;
+    }
+    
+    th, td {
+      padding: 15px 20px;
+      text-align: left;
+      border-bottom: 1px solid #444;
+    }
+    
+    th {
+      background: #2d2d44;
+      color: #a78bfa;
+      font-weight: 600;
+    }
+    
+    tr:hover { background: #2d2d44; }
+    
+    .code-block {
+      background: #0d1117;
+      border-radius: 10px;
+      padding: 20px;
+      font-family: 'Fira Code', 'Consolas', monospace;
+      font-size: 0.95rem;
+      overflow-x: auto;
+      border-left: 4px solid #667eea;
+      margin: 15px 0;
+    }
+    
+    .highlight { color: #7ee787; }
+    .keyword { color: #ff7b72; }
+    .string { color: #a5d6ff; }
+    .comment { color: #8b949e; }
+    
+    .pipeline-diagram {
+      background: #0d1117;
+      border-radius: 15px;
+      padding: 40px;
+      text-align: center;
+      margin: 30px 0;
+    }
+    
+    .pipeline-stages {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    
+    .stage {
+      background: linear-gradient(135deg, #1e3a5f 0%, #2d2d44 100%);
+      border-radius: 12px;
+      padding: 25px 30px;
+      min-width: 160px;
+      text-align: center;
+      border: 2px solid #667eea;
+      position: relative;
+    }
+    
+    .stage-number {
+      position: absolute;
+      top: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #667eea;
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+    
+    .stage h4 {
+      color: #a78bfa;
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+    }
+    
+    .stage p {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+    
+    .arrow {
+      font-size: 2rem;
+      color: #667eea;
+    }
+    
+    .tool-card {
+      background: #2d2d44;
+      border-radius: 12px;
+      padding: 25px;
+      text-align: center;
+    }
+    
+    .tool-card h4 {
+      color: #667eea;
+      margin-bottom: 15px;
+      font-size: 1.2rem;
+    }
+    
+    .tool-card ul {
+      margin-left: 0;
+      list-style: none;
+      font-size: 1.1rem;
+    }
+    
+    .tool-card li {
+      padding: 8px 0;
+      border-bottom: 1px solid #444;
+    }
+    
+    .tool-card li:last-child { border-bottom: none; }
+    
+    .badge {
+      display: inline-block;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      margin: 5px;
+    }
+    
+    .badge-primary { background: #667eea; }
+    .badge-success { background: #22c55e; }
+    .badge-warning { background: #f59e0b; }
+    .badge-info { background: #0ea5e9; }
+    
+    .flow-diagram {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      margin: 40px 0;
+      flex-wrap: wrap;
+    }
+    
+    .flow-box {
+      background: linear-gradient(135deg, #1e3a5f 0%, #2d2d44 100%);
+      border: 2px solid #667eea;
+      border-radius: 12px;
+      padding: 30px 40px;
+      text-align: center;
+      min-width: 180px;
+    }
+    
+    .flow-box h4 { color: #a78bfa; margin-bottom: 10px; }
+    .flow-box p { font-size: 0.95rem; opacity: 0.8; }
+    
+    .flow-arrow {
+      font-size: 2.5rem;
+      color: #22c55e;
+    }
+    
+    .nav {
+      position: fixed;
+      bottom: 30px;
+      right: 40px;
+      display: flex;
+      gap: 15px;
+      z-index: 100;
+    }
+    
+    .nav button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 15px 25px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+    
+    .nav button:hover { background: #764ba2; transform: scale(1.05); }
+    
+    .slide-counter {
+      position: fixed;
+      bottom: 30px;
+      left: 40px;
+      font-size: 1rem;
+      opacity: 0.6;
+    }
+    
+    .emoji { font-size: 1.5rem; margin-right: 10px; }
+    
+    .key-point {
+      background: linear-gradient(135deg, #1e3a5f 0%, #2d2d44 100%);
+      border-left: 5px solid #22c55e;
+      padding: 20px 30px;
+      margin: 20px 0;
+      border-radius: 0 10px 10px 0;
+      font-size: 1.2rem;
+    }
+    
+    .error-table td:first-child { color: #f87171; }
+    .error-table td:last-child { color: #a3e635; }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 25px;
+      margin: 30px 0;
+    }
+
+    .feature-item {
+      background: #2d2d44;
+      border-radius: 12px;
+      padding: 25px;
+      text-align: center;
+    }
+
+    .feature-item .emoji { font-size: 2.5rem; display: block; margin-bottom: 15px; }
+    .feature-item h4 { color: #a78bfa; margin-bottom: 10px; }
+
+    .qa-item {
+      background: #2d2d44;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 15px 0;
+    }
+    .qa-item strong { color: #f87171; }
+    .qa-item p { margin-top: 10px; color: #a3e635; }
+
+    /* Detailed Pipeline Architecture Diagram */
+    .arch-diagram {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      padding: 20px;
+    }
+    
+    .arch-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+    
+    .arch-box {
+      background: linear-gradient(135deg, #1e3a5f 0%, #2d2d44 100%);
+      border: 3px solid #667eea;
+      border-radius: 15px;
+      padding: 20px 25px;
+      text-align: center;
+      min-width: 140px;
+      position: relative;
+    }
+    
+    .arch-box.github { border-color: #f0883e; background: linear-gradient(135deg, #21262d 0%, #161b22 100%); }
+    .arch-box.jenkins { border-color: #d33833; background: linear-gradient(135deg, #2d1f1f 0%, #1a1a2e 100%); }
+    .arch-box.aws { border-color: #ff9900; background: linear-gradient(135deg, #232f3e 0%, #1a1a2e 100%); }
+    .arch-box.nginx { border-color: #009639; background: linear-gradient(135deg, #1a2e1f 0%, #1a1a2e 100%); }
+    .arch-box.gunicorn { border-color: #499848; background: linear-gradient(135deg, #1f2e1a 0%, #1a1a2e 100%); }
+    .arch-box.django { border-color: #092e20; background: linear-gradient(135deg, #0c3b2e 0%, #1a1a2e 100%); }
+    
+    .arch-box .icon { font-size: 2rem; margin-bottom: 8px; }
+    .arch-box h4 { color: #fff; font-size: 1rem; margin-bottom: 5px; }
+    .arch-box p { font-size: 0.8rem; opacity: 0.7; }
+    
+    .arch-arrow {
+      font-size: 1.8rem;
+      color: #22c55e;
+    }
+    
+    .arch-arrow-down {
+      font-size: 2rem;
+      color: #22c55e;
+      text-align: center;
+    }
+    
+    .arch-section {
+      border: 2px dashed #444;
+      border-radius: 20px;
+      padding: 25px;
+      position: relative;
+    }
+    
+    .arch-section-label {
+      position: absolute;
+      top: -12px;
+      left: 20px;
+      background: #1a1a2e;
+      padding: 0 15px;
+      font-size: 0.9rem;
+      color: #a78bfa;
+      font-weight: bold;
+    }
+    
+    .jenkins-stages {
+      display: flex;
+      gap: 8px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .jenkins-stage {
+      background: #3d3d5c;
+      border: 2px solid #667eea;
+      border-radius: 8px;
+      padding: 10px 15px;
+      text-align: center;
+      font-size: 0.75rem;
+      min-width: 100px;
+    }
+    
+    .jenkins-stage.ci { border-color: #0ea5e9; }
+    .jenkins-stage.cd { border-color: #22c55e; }
+    
+    .jenkins-stage .num {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      background: #667eea;
+      border-radius: 50%;
+      font-size: 0.7rem;
+      line-height: 20px;
+      margin-right: 5px;
+    }
+    
+    .server-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+    }
+    
+    .server-layer {
+      background: #2d2d44;
+      border: 2px solid #667eea;
+      border-radius: 10px;
+      padding: 12px 30px;
+      text-align: center;
+      width: 200px;
+    }
+    
+    .server-layer.nginx { border-color: #009639; }
+    .server-layer.gunicorn { border-color: #499848; }
+    .server-layer.django { border-color: #44b78b; }
+    
+  </style>
+</head>
+<body>
+
+<!-- Slide 1: Title -->
+<div class="slide slide-title active" id="slide-1">
+  <h1>CI/CD Pipeline</h1>
+  <h2>University Community Platform</h2>
+  <div class="subtitle">
+    <p>Management and IT-Consulting in Health Service</p>
+    <p>Prof. Dr. Mouzhi Ge | WS 25/26</p>
+    <p style="margin-top: 30px; opacity: 0.6;">Amit Debnath</p>
+  </div>
+</div>
+
+<!-- Slide 2: Project Overview -->
+<div class="slide" id="slide-2">
+  <h1>🎓 Project Introduction</h1>
+  <div class="content">
+    <h2>BGHI7 — University Community Platform</h2>
+    <p style="font-size: 1.3rem; margin: 20px 0; line-height: 1.8;">
+      A web-based community exclusively for <strong>university students and alumni</strong> 
+      to connect, share knowledge, and network professionally.
+    </p>
+    
+    <div class="feature-grid">
+      <div class="feature-item">
+        <span class="emoji">📧</span>
+        <h4>Email Verification</h4>
+        <p>Students register with university emails (@th-deg.de, @thi.de)</p>
+      </div>
+      <div class="feature-item">
+        <span class="emoji">🎫</span>
+        <h4>Alumni Access</h4>
+        <p>Invitation codes for verified alumni</p>
+      </div>
+      <div class="feature-item">
+        <span class="emoji">💬</span>
+        <h4>Discussion Rooms</h4>
+        <p>Topic-based forums and threads</p>
+      </div>
+      <div class="feature-item">
+        <span class="emoji">👍</span>
+        <h4>Voting System</h4>
+        <p>Upvote/downvote on posts</p>
+      </div>
+      <div class="feature-item">
+        <span class="emoji">💼</span>
+        <h4>Jobs & Referrals</h4>
+        <p>Premium feature for career networking</p>
+      </div>
+      <div class="feature-item">
+        <span class="emoji">🔌</span>
+        <h4>REST API</h4>
+        <p>Full API for mobile/external apps</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: Technology Stack -->
+<div class="slide" id="slide-3">
+  <h1>🛠️ Technology Stack</h1>
+  <div class="content">
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Purpose</th></tr>
+      <tr><td>Backend</td><td>Python 3.10 + Django 5.2</td><td>Web framework & business logic</td></tr>
+      <tr><td>API</td><td>Django REST Framework</td><td>RESTful endpoints</td></tr>
+      <tr><td>Frontend</td><td>Django Templates + CSS/JS</td><td>Server-rendered UI</td></tr>
+      <tr><td>Database</td><td>SQLite</td><td>Data storage</td></tr>
+      <tr><td>App Server</td><td>Gunicorn (WSGI)</td><td>Python app server</td></tr>
+      <tr><td>Web Server</td><td>Nginx</td><td>Reverse proxy & static files</td></tr>
+      <tr><td>Hosting</td><td>AWS EC2 (Free Tier)</td><td>Cloud infrastructure</td></tr>
+      <tr><td>CI/CD</td><td>Jenkins LTS</td><td>Automation pipeline</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- Slide 4: CI/CD Overview -->
+<div class="slide" id="slide-4">
+  <h1>🔄 CI/CD Pipeline Overview</h1>
+  <div class="content">
+    <div class="flow-diagram">
+      <div class="flow-box">
+        <h4>👨‍💻 Developer</h4>
+        <p>Push code to GitHub</p>
+      </div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-box">
+        <h4>🔔 GitHub Webhook</h4>
+        <p>Triggers Jenkins</p>
+      </div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-box">
+        <h4>🏗️ Jenkins</h4>
+        <p>Build, Test, Deploy</p>
+      </div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-box">
+        <h4>☁️ AWS EC2</h4>
+        <p>Live Production</p>
+      </div>
+    </div>
+
+    <div class="key-point">
+      <strong>🎯 Key Benefit:</strong> Every push to <code>main</code> automatically builds, tests, and deploys — <strong>zero manual steps!</strong>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: Pipeline Stages -->
+<div class="slide" id="slide-5">
+  <h1>📊 Pipeline Stages</h1>
+  <div class="content">
+    <div class="pipeline-diagram">
+      <div class="pipeline-stages">
+        <div class="stage">
+          <div class="stage-number">1</div>
+          <h4>Checkout</h4>
+          <p>Clone repo from GitHub</p>
+        </div>
+        <span class="arrow">→</span>
+        <div class="stage">
+          <div class="stage-number">2</div>
+          <h4>Setup venv</h4>
+          <p>Install dependencies</p>
+        </div>
+        <span class="arrow">→</span>
+        <div class="stage">
+          <div class="stage-number">3</div>
+          <h4>Django Checks</h4>
+          <p>Validate configuration</p>
+        </div>
+        <span class="arrow">→</span>
+        <div class="stage">
+          <div class="stage-number">4</div>
+          <h4>Tests</h4>
+          <p>Run 17 tests + coverage</p>
+        </div>
+        <span class="arrow">→</span>
+        <div class="stage">
+          <div class="stage-number">5</div>
+          <h4>Deploy</h4>
+          <p>Push to production</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="two-column" style="margin-top: 30px;">
+      <div>
+        <h3>⏱️ Pipeline Duration</h3>
+        <p style="font-size: 1.3rem;">~2-3 minutes total</p>
+      </div>
+      <div>
+        <h3>📈 Test Coverage</h3>
+        <p style="font-size: 1.3rem;">17 tests, ~50% coverage</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 6: Architecture Diagram -->
+<div class="slide" id="slide-6">
+  <h1>🏗️ Full Pipeline Architecture</h1>
+  <div class="content">
+    <div class="arch-diagram">
+      
+      <!-- Developer Row -->
+      <div class="arch-row">
+        <div class="arch-box">
+          <div class="icon">👨‍💻</div>
+          <h4>Developer</h4>
+          <p>Local Machine</p>
+        </div>
+        <span class="arch-arrow">→ git push →</span>
+        <div class="arch-box github">
+          <div class="icon">🐙</div>
+          <h4>GitHub</h4>
+          <p>Repository</p>
+        </div>
+        <span class="arch-arrow">→ webhook →</span>
+        <div class="arch-box jenkins">
+          <div class="icon">🔧</div>
+          <h4>Jenkins</h4>
+          <p>CI/CD Server</p>
+        </div>
+      </div>
+      
+      <!-- Jenkins Stages Detail -->
+      <div class="arch-section" style="margin: 0 auto; max-width: 900px;">
+        <span class="arch-section-label">Jenkins Pipeline (Jenkinsfile)</span>
+        <div class="jenkins-stages">
+          <div class="jenkins-stage ci"><span class="num">1</span>Checkout</div>
+          <span class="arch-arrow">→</span>
+          <div class="jenkins-stage ci"><span class="num">2</span>Setup venv</div>
+          <span class="arch-arrow">→</span>
+          <div class="jenkins-stage ci"><span class="num">3</span>Django Checks</div>
+          <span class="arch-arrow">→</span>
+          <div class="jenkins-stage ci"><span class="num">4</span>Tests + Coverage</div>
+          <span class="arch-arrow">→</span>
+          <div class="jenkins-stage cd"><span class="num">5</span>Deploy App</div>
+        </div>
+        <div style="display: flex; justify-content: space-around; margin-top: 15px; font-size: 0.85rem;">
+          <span style="color: #0ea5e9;">━━ CI (Continuous Integration)</span>
+          <span style="color: #22c55e;">━━ CD (Continuous Deployment)</span>
+        </div>
+      </div>
+      
+      <!-- Deployment Target -->
+      <div class="arch-row">
+        <div class="arch-section" style="padding: 30px 50px;">
+          <span class="arch-section-label">AWS EC2 (Ubuntu 22.04)</span>
+          <div class="server-stack">
+            <div class="server-layer nginx">
+              <strong>Nginx</strong> :80
+              <div style="font-size: 0.8rem; opacity: 0.7;">Reverse Proxy + Static Files</div>
+            </div>
+            <div class="arch-arrow-down">↓</div>
+            <div class="server-layer gunicorn">
+              <strong>Gunicorn</strong> :8000
+              <div style="font-size: 0.8rem; opacity: 0.7;">WSGI App Server (1 worker)</div>
+            </div>
+            <div class="arch-arrow-down">↓</div>
+            <div class="server-layer django">
+              <strong>Django</strong>
+              <div style="font-size: 0.8rem; opacity: 0.7;">Python App + SQLite</div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-left: 40px;">
+          <div class="key-point" style="margin: 0;">
+            <strong>🌐 Live at:</strong><br>
+            <code style="font-size: 1.1rem;">http://100.53.1.235</code>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<!-- Slide 7: Stage Details - CI -->
+<div class="slide" id="slide-7">
+  <h1>🧪 Continuous Integration</h1>
+  <div class="content two-column">
+    <div>
+      <h3>Stage 2: Setup Environment</h3>
+      <div class="code-block">
+        <span class="keyword">python3</span> -m venv .venv<br>
+        .venv/bin/<span class="keyword">pip</span> install -r requirements.txt<br>
+        .venv/bin/<span class="keyword">pip</span> install -r requirements-dev.txt
+      </div>
+      <p>Creates isolated Python environment with all dependencies</p>
+
+      <h3 style="margin-top: 30px;">Stage 3: Django Checks</h3>
+      <div class="code-block">
+        <span class="keyword">python</span> manage.py <span class="highlight">check</span><br>
+        <span class="keyword">python</span> manage.py <span class="highlight">migrate</span> --noinput
+      </div>
+      <p>Validates models, settings, URLs. Applies database migrations.</p>
+    </div>
+    <div>
+      <h3>Stage 4: Tests + Coverage</h3>
+      <div class="code-block">
+        <span class="keyword">coverage</span> run manage.py <span class="highlight">test</span><br>
+        <span class="keyword">coverage</span> xml -o coverage.xml<br>
+        <span class="keyword">coverage</span> report -m
+      </div>
+      
+      <h3 style="margin-top: 20px;">What We Test:</h3>
+      <ul>
+        <li>✅ Form validation (student/alumni registration)</li>
+        <li>✅ View access control (login required)</li>
+        <li>✅ Premium feature gating</li>
+        <li>✅ API authentication</li>
+        <li>✅ Voting functionality</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 8: Stage Details - CD -->
+<div class="slide" id="slide-8">
+  <h1>🚀 Continuous Deployment</h1>
+  <div class="content">
+    <h3>Stage 5: Deploy to Production</h3>
+    <div class="code-block" style="font-size: 0.85rem;">
+      <span class="comment"># 1. Sync code to server</span><br>
+      <span class="keyword">sudo</span> rsync -av --delete . /opt/bghi7/<br><br>
+      
+      <span class="comment"># 2. Install dependencies</span><br>
+      venv/bin/<span class="keyword">pip</span> install -r requirements.txt<br><br>
+      
+      <span class="comment"># 3. Database migrations</span><br>
+      venv/bin/<span class="keyword">python</span> manage.py migrate --noinput<br><br>
+      
+      <span class="comment"># 4. Collect static files</span><br>
+      venv/bin/<span class="keyword">python</span> manage.py collectstatic --noinput<br><br>
+      
+      <span class="comment"># 5. Restart services</span><br>
+      <span class="keyword">sudo</span> systemctl restart bghi7<br>
+      <span class="keyword">sudo</span> systemctl restart nginx
+    </div>
+    
+    <div class="key-point">
+      <strong>🔑 Automatic:</strong> No manual SSH, no manual commands — Jenkins handles everything!
+    </div>
+  </div>
+</div>
+
+<!-- Slide 9: Error Handling -->
+<div class="slide" id="slide-9">
+  <h1>⚠️ Error Handling & Feedback</h1>
+  <div class="content">
+    <table class="error-table">
+      <tr><th>Scenario</th><th>What Happens</th></tr>
+      <tr>
+        <td>❌ Test Failure</td>
+        <td>Pipeline stops → Build marked FAILED → No deployment</td>
+      </tr>
+      <tr>
+        <td>❌ Django Check Fails</td>
+        <td>Pipeline stops at Stage 3 → Developer notified</td>
+      </tr>
+      <tr>
+        <td>❌ Deployment Fails</td>
+        <td>Previous version stays running (systemd auto-restart)</td>
+      </tr>
+      <tr>
+        <td>✅ Build Success</td>
+        <td>Green checkmark → App live immediately</td>
+      </tr>
+    </table>
+    
+    <h3 style="margin-top: 40px;">📣 Feedback Loop</h3>
+    <ul>
+      <li>Jenkins Dashboard shows build status in real-time</li>
+      <li>GitHub shows commit status (✅ or ❌)</li>
+      <li>Build logs available for debugging</li>
+      <li>Coverage reports archived for each build</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Slide 10: Toolset -->
+<div class="slide" id="slide-10">
+  <h1>🧰 Toolset Overview</h1>
+  <div class="content">
+    <div class="three-column">
+      <div class="tool-card">
+        <h4>🔄 CI/CD Orchestration</h4>
+        <ul>
+          <li><strong>Jenkins LTS</strong><br><small>Pipeline automation</small></li>
+          <li><strong>GitHub</strong><br><small>Source + Webhooks</small></li>
+        </ul>
+      </div>
+      <div class="tool-card">
+        <h4>🧪 Testing</h4>
+        <ul>
+          <li><strong>Django Tests</strong><br><small>Unit/integration tests</small></li>
+          <li><strong>Coverage.py</strong><br><small>Code coverage</small></li>
+        </ul>
+      </div>
+      <div class="tool-card">
+        <h4>🚀 Deployment</h4>
+        <ul>
+          <li><strong>Gunicorn</strong><br><small>WSGI server</small></li>
+          <li><strong>Nginx</strong><br><small>Reverse proxy</small></li>
+          <li><strong>systemd</strong><br><small>Process manager</small></li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="tool-card" style="margin-top: 30px;">
+      <h4>☁️ Infrastructure</h4>
+      <div style="display: flex; justify-content: space-around; padding: 20px;">
+        <div><span class="badge badge-primary">AWS EC2</span> Free Tier (t3.micro)</div>
+        <div><span class="badge badge-success">Ubuntu 22.04</span> LTS</div>
+        <div><span class="badge badge-info">Boto3</span> Infrastructure as Code</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 11: Why These Tools -->
+<div class="slide" id="slide-11">
+  <h1>💡 Why These Tools?</h1>
+  <div class="content">
+    <table>
+      <tr><th>Tool</th><th>Why Chosen</th></tr>
+      <tr>
+        <td><strong>Jenkins</strong></td>
+        <td>Industry standard, self-hosted (free), powerful Groovy DSL, extensive plugins</td>
+      </tr>
+      <tr>
+        <td><strong>GitHub Webhooks</strong></td>
+        <td>Instant triggers on push, no polling delay, easy setup</td>
+      </tr>
+      <tr>
+        <td><strong>AWS EC2 Free Tier</strong></td>
+        <td>750 hours/month free, easy provisioning, production-like environment</td>
+      </tr>
+      <tr>
+        <td><strong>Gunicorn + Nginx</strong></td>
+        <td>Production-proven combo, handles concurrent requests, serves static files efficiently</td>
+      </tr>
+      <tr>
+        <td><strong>Coverage.py</strong></td>
+        <td>Standard Python tool, integrates with Django, generates HTML reports</td>
+      </tr>
+    </table>
+    
+    <div class="key-point" style="margin-top: 30px;">
+      <strong>💰 Total Cost:</strong> $0/month — Everything runs on AWS Free Tier!
+    </div>
+  </div>
+</div>
+
+<!-- Slide 12: Key Takeaways -->
+<div class="slide" id="slide-12">
+  <h1>🎯 Key Takeaways</h1>
+  <div class="content">
+    <div class="feature-grid" style="grid-template-columns: 1fr 1fr;">
+      <div class="feature-item">
+        <span class="emoji">🤖</span>
+        <h4>Fully Automated</h4>
+        <p>Push → Test → Deploy (zero manual steps)</p>
+      </div>
+      <div class="feature-item">
+        <span class="emoji">⚡</span>
+        <h4>Fast Feedback</h4>
+        <p>Pipeline runs in ~2-3 minutes</p>
+      </div>
+      <div class="feature-item">
+        <span class="emoji">💸</span>
+        <h4>Cost-Effective</h4>
+        <p>$0/month on AWS Free Tier</p>
+      </div>
+      <div class="feature-item">
+        <span class="emoji">🏭</span>
+        <h4>Production-Ready</h4>
+        <p>Industry-standard tools</p>
+      </div>
+    </div>
+    
+    <div class="flow-diagram" style="margin-top: 50px;">
+      <div class="flow-box" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); border-color: #22c55e;">
+        <h4 style="color: white;">✅ Result</h4>
+        <p style="color: white;">Every code change is automatically tested and deployed to production!</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 13: Live Demo -->
+<div class="slide" id="slide-13">
+  <h1>🖥️ Live Demo</h1>
+  <div class="content" style="text-align: center;">
+    <div class="feature-grid" style="grid-template-columns: 1fr 1fr; max-width: 800px; margin: 40px auto;">
+      <div class="feature-item">
+        <span class="emoji">🏗️</span>
+        <h4>Jenkins Dashboard</h4>
+        <p style="font-family: monospace; font-size: 1.1rem; color: #60a5fa;">http://100.53.1.235:8080</p>
+      </div>
+      <div class="feature-item">
+        <span class="emoji">🌐</span>
+        <h4>Live Application</h4>
+        <p style="font-family: monospace; font-size: 1.1rem; color: #60a5fa;">http://100.53.1.235</p>
+      </div>
+    </div>
+    
+    <h3 style="margin-top: 50px;">Demo Steps:</h3>
+    <ol style="text-align: left; max-width: 600px; margin: 20px auto; font-size: 1.3rem;">
+      <li>Show Jenkins pipeline dashboard</li>
+      <li>Make a small code change locally</li>
+      <li>Push to GitHub</li>
+      <li>Watch pipeline auto-trigger</li>
+      <li>Verify change on live app</li>
+    </ol>
+  </div>
+</div>
+
+<!-- Slide 14: Q&A -->
+<div class="slide slide-title" id="slide-14" style="background: linear-gradient(135deg, #1e3a5f 0%, #2d2d44 100%);">
+  <h1>❓ Questions?</h1>
+  <h2 style="margin-top: 40px;">Thank you!</h2>
+  <div class="subtitle" style="margin-top: 60px;">
+    <p><strong>GitHub:</strong> github.com/Amit021/BGHI7</p>
+    <p><strong>Jenkins:</strong> http://100.53.1.235:8080</p>
+    <p><strong>Live App:</strong> http://100.53.1.235</p>
+  </div>
+</div>
+
+<!-- Navigation -->
+<div class="nav">
+  <button onclick="prevSlide()">← Prev</button>
+  <button onclick="nextSlide()">Next →</button>
+</div>
+
+<div class="slide-counter">
+  <span id="current">1</span> / <span id="total">14</span>
+</div>
+
+<script>
+  let currentSlide = 1;
+  const totalSlides = 14;
+  
+  function showSlide(n) {
+    document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+    document.getElementById('slide-' + n).classList.add('active');
+    document.getElementById('current').textContent = n;
+    currentSlide = n;
+  }
+  
+  function nextSlide() {
+    if (currentSlide < totalSlides) showSlide(currentSlide + 1);
+  }
+  
+  function prevSlide() {
+    if (currentSlide > 1) showSlide(currentSlide - 1);
+  }
+  
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+    if (e.key === 'ArrowLeft') prevSlide();
+  });
+  
+  document.getElementById('total').textContent = totalSlides;
+</script>
+
+</body>
+</html>
