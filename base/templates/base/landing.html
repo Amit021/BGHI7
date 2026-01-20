@@ -1,0 +1,173 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  .landing {
+    min-height: calc(100vh - 80px);
+    padding: 60px 20px;
+  }
+
+  .landing__hero {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  .landing__hero h1 {
+    font-size: 3rem;
+    color: var(--color-main);
+    margin-bottom: 15px;
+  }
+
+  .landing__hero p {
+    font-size: 1.3rem;
+    color: var(--color-light-gray);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .landing__categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .category-card {
+    background: var(--color-dark-medium);
+    border-radius: 16px;
+    padding: 40px 30px;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: 2px solid transparent;
+    text-decoration: none;
+    display: block;
+  }
+
+  .category-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    border-color: var(--color-main);
+  }
+
+  .category-card__icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .category-card h2 {
+    font-size: 1.5rem;
+    color: var(--color-light);
+    margin-bottom: 15px;
+  }
+
+  .category-card p {
+    color: var(--color-gray);
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .category-card__count {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--color-dark-light);
+    color: var(--color-main);
+    font-weight: 600;
+  }
+
+  /* Category-specific colors */
+  .category-card--community:hover { border-color: #667eea; }
+  .category-card--community .category-card__icon { color: #667eea; }
+
+  .category-card--jobs:hover { border-color: #22c55e; }
+  .category-card--jobs .category-card__icon { color: #22c55e; }
+
+  .category-card--study:hover { border-color: #f59e0b; }
+  .category-card--study .category-card__icon { color: #f59e0b; }
+
+  .category-card--mentorship:hover { border-color: #ec4899; }
+  .category-card--mentorship .category-card__icon { color: #ec4899; }
+
+  .landing__cta {
+    text-align: center;
+    margin-top: 60px;
+  }
+
+  .landing__cta p {
+    color: var(--color-gray);
+    margin-bottom: 20px;
+  }
+
+  .landing__cta .btn {
+    padding: 15px 40px;
+    font-size: 1.1rem;
+  }
+
+  @media (max-width: 768px) {
+    .landing__hero h1 {
+      font-size: 2rem;
+    }
+    .landing__hero p {
+      font-size: 1.1rem;
+    }
+    .category-card {
+      padding: 30px 20px;
+    }
+    .category-card__icon {
+      font-size: 3rem;
+    }
+  }
+</style>
+
+<main class="landing">
+  <div class="landing__hero">
+    <h1>Welcome to MentalSense</h1>
+    <p>A community platform connecting university students and alumni. Share, learn, and grow together.</p>
+  </div>
+
+  <div class="landing__categories">
+    <!-- Community Category -->
+    <a href="{% url 'home' %}?category=community" class="category-card category-card--community">
+      <span class="category-card__icon">💬</span>
+      <h2>Community</h2>
+      <p>Share experiences, ask questions, and connect with fellow students and alumni on everyday topics.</p>
+      <div class="category-card__count">{{ community_count }} posts</div>
+    </a>
+
+    <!-- Jobs Category - Only visible to paid users -->
+    {% if request.user.is_authenticated and request.user.is_paid %}
+    <a href="{% url 'home' %}?category=jobs" class="category-card category-card--jobs">
+      <span class="category-card__icon">💼</span>
+      <h2>Jobs & Careers</h2>
+      <p>Find job opportunities, referrals, and career advice from alumni working in the industry.</p>
+      <div class="category-card__count">{{ jobs_count }} posts</div>
+    </a>
+    {% endif %}
+
+    <!-- Study Materials Category -->
+    <a href="{% url 'home' %}?category=study" class="category-card category-card--study">
+      <span class="category-card__icon">📚</span>
+      <h2>Study Materials</h2>
+      <p>Share and access study resources, notes, past exams, and learning materials.</p>
+      <div class="category-card__count">{{ study_count }} posts</div>
+    </a>
+
+    <!-- Mentorship Category -->
+    <a href="{% url 'home' %}?category=mentorship" class="category-card category-card--mentorship">
+      <span class="category-card__icon">🤝</span>
+      <h2>Mentorship</h2>
+      <p>Connect with mentors, find mentees, and participate in guidance programs between students and alumni.</p>
+      <div class="category-card__count">{{ mentorship_count }} posts</div>
+    </a>
+  </div>
+
+  {% if not user.is_authenticated %}
+  <div class="landing__cta">
+    <p>Join our community today!</p>
+    <a href="{% url 'register' %}" class="btn btn--main">Get Started</a>
+  </div>
+  {% endif %}
+</main>
+{% endblock %}

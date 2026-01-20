@@ -1,0 +1,154 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<style>
+  .inbox {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+
+  .inbox__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+
+  .inbox__header h1 {
+    color: var(--color-light);
+    font-size: 1.8rem;
+  }
+
+  .inbox__header .btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .conversation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .conversation-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    background: var(--color-dark-medium);
+    border-radius: 12px;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .conversation-item:hover {
+    background: var(--color-dark-light);
+  }
+
+  .conversation-item.unread {
+    border-left: 4px solid var(--color-main);
+  }
+
+  .conversation-item__avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .conversation-item__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .conversation-item__name {
+    color: var(--color-light);
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+
+  .conversation-item__preview {
+    color: var(--color-gray);
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .conversation-item__meta {
+    text-align: right;
+  }
+
+  .conversation-item__time {
+    color: var(--color-gray);
+    font-size: 0.8rem;
+    margin-bottom: 5px;
+  }
+
+  .conversation-item__badge {
+    background: var(--color-main);
+    color: white;
+    font-size: 0.75rem;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--color-gray);
+  }
+
+  .empty-state h2 {
+    margin-bottom: 15px;
+    color: var(--color-light);
+  }
+
+  .empty-state p {
+    margin-bottom: 30px;
+  }
+</style>
+
+<main class="inbox">
+  <div class="inbox__header">
+    <h1>📬 Messages {% if total_unread > 0 %}<span style="font-size: 1rem; color: var(--color-main);">({{ total_unread }} unread)</span>{% endif %}</h1>
+    <a href="{% url 'start-conversation' %}" class="btn btn--main">
+      <svg width="20" height="20" viewBox="0 0 32 32" fill="currentColor">
+        <path d="M16.943 0.943h-1.885v14.115h-14.115v1.885h14.115v14.115h1.885v-14.115h14.115v-1.885h-14.115v-14.115z"></path>
+      </svg>
+      New Message
+    </a>
+  </div>
+
+  {% if conversations %}
+  <div class="conversation-list">
+    {% for conv in conversations %}
+    <a href="{% url 'conversation' conv.user.id %}" class="conversation-item {% if conv.unread_count > 0 %}unread{% endif %}">
+      <img src="{{ conv.user.avatar.url }}" alt="{{ conv.user.username }}" class="conversation-item__avatar">
+      <div class="conversation-item__content">
+        <div class="conversation-item__name">{{ conv.user.name|default:conv.user.username }}</div>
+        <div class="conversation-item__preview">
+          {% if conv.last_message.sender == request.user %}You: {% endif %}{{ conv.last_message.content|truncatechars:50 }}
+        </div>
+      </div>
+      <div class="conversation-item__meta">
+        <div class="conversation-item__time">{{ conv.last_message.created|timesince }} ago</div>
+        {% if conv.unread_count > 0 %}
+        <span class="conversation-item__badge">{{ conv.unread_count }}</span>
+        {% endif %}
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <h2>No messages yet</h2>
+    <p>Start a conversation with other students or alumni!</p>
+    <a href="{% url 'start-conversation' %}" class="btn btn--main">Start a Conversation</a>
+  </div>
+  {% endif %}
+</main>
+{% endblock %}

@@ -13,7 +13,9 @@
     </div>
     <div class="roomListRoom__content">
       <a href="{% url 'room' room.id %}">{{room.name}}</a>
-      
+      {% if room.attachment %}
+      <span style="display: inline-block; margin-left: 0.5rem; padding: 0.15rem 0.5rem; background: var(--color-main); color: white; border-radius: 12px; font-size: 0.75rem;">📎 File</span>
+      {% endif %}
     </div>
     <div class="roomListRoom__meta">
       <a href="{% url 'room' room.id %}" class="roomListRoom__joined">

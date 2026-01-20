@@ -2,14 +2,11 @@
 {% load static %}
 
 {% block content %}
-  <main class="profile-page layout layout--3">
+  <main class="profile-page layout">
     <div class="container">
-      <!-- Topics Start -->
-      {% include 'base/topics_component.html' %}
-      <!-- Topics End -->
 
-      <!-- Room List Start -->
-      <div class="roomList">
+      <!-- Settings Start -->
+      <div class="roomList" style="max-width: 600px; margin: 0 auto;">
         <div class="profile">
           <div class="profile__avatar">
             <div class="avatar avatar--large active">
@@ -88,11 +85,8 @@
           </div>
         </div>
       </div>
-      <!-- Room List End -->
+      <!-- Settings End -->
 
-      <!-- Activities Start -->
-      {% include 'base/activity_component.html' %}
-      <!-- Activities End -->
     </div>
   </main>
 {% endblock content %}

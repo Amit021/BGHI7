@@ -1,0 +1,169 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<style>
+  .mentorship-form-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+
+  .mentorship-form {
+    background: var(--color-dark-medium);
+    border-radius: 12px;
+    padding: 2rem;
+  }
+
+  .mentorship-form h2 {
+    color: var(--color-light);
+    margin-bottom: 0.5rem;
+  }
+
+  .mentorship-form p.subtitle {
+    color: var(--color-gray);
+    margin-bottom: 2rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-light);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+  }
+
+  .form-group input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--color-main);
+    cursor: pointer;
+  }
+
+  .form-group textarea {
+    width: 100%;
+    background: var(--color-dark);
+    border: 1px solid var(--color-dark-light);
+    border-radius: 8px;
+    padding: 0.75rem;
+    color: var(--color-light);
+    font-family: inherit;
+    resize: vertical;
+  }
+
+  .form-group textarea:focus {
+    outline: none;
+    border-color: var(--color-main);
+  }
+
+  .form-group textarea::placeholder {
+    color: var(--color-gray);
+  }
+
+  .form-group .help-text {
+    font-size: 0.85rem;
+    color: var(--color-gray);
+    margin-top: 0.25rem;
+  }
+
+  .checkbox-group {
+    background: var(--color-dark);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .checkbox-group label {
+    margin-bottom: 0;
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .form-actions .btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .back-link {
+    display: inline-block;
+    color: var(--color-main);
+    margin-bottom: 1rem;
+  }
+</style>
+
+<main class="layout">
+  <div class="mentorship-form-container">
+    <a href="{% url 'home' %}?category=mentorship" class="back-link">← Back to Mentorship</a>
+    
+    <div class="mentorship-form">
+      <h2>My Mentorship Profile</h2>
+      <p class="subtitle">Let others know if you're available to mentor or looking for a mentor</p>
+      
+      <form method="POST">
+        {% csrf_token %}
+        
+        <div class="checkbox-group">
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label>
+              <input type="checkbox" name="is_available_as_mentor" {% if form.instance.is_available_as_mentor %}checked{% endif %}>
+              🎓 I am available as a mentor
+            </label>
+          </div>
+          
+          <div class="form-group" style="margin-bottom: 0;">
+            <label>
+              <input type="checkbox" name="is_seeking_mentor" {% if form.instance.is_seeking_mentor %}checked{% endif %}>
+              🔍 I am looking for a mentor
+            </label>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="id_mentor_topics">Topics I can mentor on</label>
+          <textarea name="mentor_topics" id="id_mentor_topics" rows="2" placeholder="e.g., Python, Machine Learning, Career Advice">{{ form.instance.mentor_topics }}</textarea>
+          <p class="help-text">Comma-separated list of topics you can help others with</p>
+        </div>
+        
+        <div class="form-group">
+          <label for="id_seeking_topics">Topics I want to learn</label>
+          <textarea name="seeking_topics" id="id_seeking_topics" rows="2" placeholder="e.g., Data Science, Interview Prep">{{ form.instance.seeking_topics }}</textarea>
+          <p class="help-text">Comma-separated list of topics you'd like guidance on</p>
+        </div>
+        
+        <div class="form-group">
+          <label for="id_experience">My experience/background</label>
+          <textarea name="experience" id="id_experience" rows="3" placeholder="Brief description of your background and expertise">{{ form.instance.experience }}</textarea>
+          <p class="help-text">Help others understand your background</p>
+        </div>
+        
+        <div class="form-actions">
+          <a href="{% url 'home' %}?category=mentorship" class="btn btn--dark">Cancel</a>
+          <button type="submit" class="btn btn--main">Save Profile</button>
+        </div>
+      </form>
+      
+      {% if mentor_profile.pk %}
+      <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--color-dark-light);">
+        <form method="POST" action="{% url 'delete-mentorship-profile' %}" onsubmit="return confirm('Are you sure you want to delete your mentorship profile?');">
+          {% csrf_token %}
+          <button type="submit" class="btn" style="background: #dc2626; color: white; width: 100%; justify-content: center;">
+            🗑️ Delete Mentorship Profile
+          </button>
+        </form>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</main>
+
+{% endblock %}

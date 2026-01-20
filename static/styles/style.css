@@ -266,19 +266,30 @@ a {
 ================================*/
 
 .header {
-  padding: 1.5rem;
+  padding: 1rem 0;
   background-color: var(--color-dark);
+  border-bottom: 1px solid var(--color-bg);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .header > .container {
   display: flex;
-  gap: 9.5rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
 }
 
-.header__logo,
-.header__user {
+.header__logo {
   display: flex;
   gap: 2rem;
+  align-items: center;
+}
+
+.header__user {
+  display: flex;
+  gap: 1rem;
   align-items: center;
 }
 
@@ -295,7 +306,7 @@ a {
 
 .header__search > label {
   background-color: var(--color-dark-medium);
-  padding: 1.3rem 1rem;
+  padding: 0.8rem 1rem;
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -323,7 +334,7 @@ a {
   }
 
   .header > .container {
-    gap: 3rem;
+    gap: 1.5rem;
   }
 }
 
@@ -342,6 +353,53 @@ a {
 .header__menu {
   margin-left: auto;
   position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.header__menu .header__messages {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background: var(--color-dark-medium);
+  transition: background 0.2s;
+  padding: 0;
+  gap: 0;
+}
+
+.header__messages:hover {
+  background: var(--color-dark-light);
+}
+
+.header__messages svg {
+  fill: var(--color-gray);
+  transition: fill 0.2s;
+}
+
+.header__messages:hover svg {
+  fill: var(--color-main);
+}
+
+.header__messages-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  background: #e74c3c;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  min-width: 1.8rem;
+  height: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  padding: 0 0.4rem;
 }
 
 .header__menu a {

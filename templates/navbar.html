@@ -1,7 +1,7 @@
 {% load static %}
 <header class="header header--loggedIn">
     <div class="container">
-      <a href="{% url 'home' %}" class="header__logo">
+      <a href="{% url 'landing' %}" class="header__logo">
         <img src="{% static 'images/logo.svg' %}" />
         <h1>MentalSense</h1>
       </a>
@@ -21,6 +21,14 @@
 
         <!-- Logged In -->
         {% if request.user.is_authenticated %}
+        <a href="{% url 'inbox' %}" class="header__messages" title="Messages">
+          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32">
+            <path d="M28 4h-24c-2.2 0-4 1.8-4 4v16c0 2.2 1.8 4 4 4h24c2.2 0 4-1.8 4-4v-16c0-2.2-1.8-4-4-4zM28 8l-12 8-12-8h24zM4 24v-14l12 8 12-8v14h-24z" fill="currentColor"></path>
+          </svg>
+          {% if unread_message_count %}
+          <span class="header__messages-badge">{{ unread_message_count }}</span>
+          {% endif %}
+        </a>
         <div class="header__user">
           <a href="{% url 'user-profile' request.user.id %}">
             <div class="avatar avatar--medium active">

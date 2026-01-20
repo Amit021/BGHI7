@@ -1,67 +1,201 @@
 {% extends 'main.html' %}
 
 {% block content %}
-  <main class="profile-page layout layout--3">
-    <div class="container">
-      <!-- Topics Start -->
-      {% include 'base/topics_component.html' %}
-      <!-- Topics End -->
+<style>
+  .profile-layout {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    width: 95%;
+    max-width: 1600px;
+    margin: 2rem auto;
+  }
 
-      <!-- Room List Start -->
-      <div class="roomList">
-        <div class="profile">
-          <div class="profile__avatar">
-            <div class="avatar avatar--large active">
-              <img src="{{user.avatar.url}}" />
+  .profile-layout__main {
+    flex: 0 0 60%;
+  }
+
+  .profile-layout__sidebar {
+    flex: 0 0 25%;
+  }
+
+  .ad-card {
+    background: var(--color-dark-medium);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .ad-card__label {
+    font-size: 0.75rem;
+    color: var(--color-gray);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+  }
+
+  .ad-card__image {
+    width: 100%;
+    height: 180px;
+    background: linear-gradient(135deg, var(--color-main) 0%, #667eea 100%);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+  }
+
+  .ad-card__image span {
+    font-size: 3rem;
+  }
+
+  .ad-card h3 {
+    color: var(--color-light);
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+  }
+
+  .ad-card p {
+    color: var(--color-gray);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 15px;
+  }
+
+  .ad-card .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  @media (max-width: 900px) {
+    .profile-layout {
+      flex-direction: column;
+    }
+    .profile-layout__main,
+    .profile-layout__sidebar {
+      flex: 1 1 100%;
+    }
+  }
+</style>
+
+  <main class="profile-page layout">
+    <div class="profile-layout">
+
+      <!-- Profile Content Start -->
+      <div class="profile-layout__main">
+        <div class="roomList">
+          <div class="profile">
+            <div class="profile__avatar">
+              <div class="avatar avatar--large active">
+                <img src="{{user.avatar.url}}" />
+              </div>
+            </div>
+            <div class="profile__info">
+              <h3>{{user.username}}</h3>
+              <p>@{{user.username}}</p>
+              {% if request.user == user %}
+              <a href="{% url 'update-user' %}" class="btn btn--main btn--pill">Edit Profile</a>
+              {% endif %}
+            </div>
+
+            {% if request.user == user %}
+            <div class="profile__about">
+              <h3>Demo Paid Access</h3>
+              {% if request.user.is_paid %}
+                <p>Enabled: You can access Jobs & Referrals.</p>
+                <form action="{% url 'demo-unsubscribe' %}" method="POST">
+                  {% csrf_token %}
+                  <button class="btn btn--dark btn--pill" type="submit">Disable Demo Access</button>
+                </form>
+              {% else %}
+                <p>Enable demo access to view/post/comment in Jobs & Referrals.</p>
+                <form action="{% url 'demo-subscribe' %}" method="POST">
+                  {% csrf_token %}
+                  <button class="btn btn--main btn--pill" type="submit">Enable Demo Access</button>
+                </form>
+              {% endif %}
+            </div>
+            {% endif %}
+            <div class="profile__about">
+              <h3>About</h3>
+              <p>
+                {{user.bio}}
+              </p>
+            </div>
+            
+            {% if mentor_profile and mentor_profile.is_available_as_mentor or mentor_profile.is_seeking_mentor %}
+            <div class="profile__about" style="background: linear-gradient(135deg, rgba(113, 66, 197, 0.1) 0%, rgba(102, 126, 234, 0.1) 100%); border: 1px solid var(--color-main); border-radius: 8px; padding: 1rem; margin-top: 1rem;">
+              <h3 style="color: var(--color-main);">🤝 Mentorship</h3>
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
+                {% if mentor_profile.is_available_as_mentor %}
+                <span style="background: var(--color-main); color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem;">🎓 Available as Mentor</span>
+                {% endif %}
+                {% if mentor_profile.is_seeking_mentor %}
+                <span style="background: #22c55e; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem;">🔍 Looking for Mentor</span>
+                {% endif %}
+              </div>
+              {% if mentor_profile.mentor_topics %}
+              <p style="margin-bottom: 0.5rem;"><strong>Can mentor on:</strong></p>
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
+                {% for topic in mentor_profile.get_mentor_topics_list %}
+                <span style="background: var(--color-dark); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.8rem; color: var(--color-gray);">{{ topic }}</span>
+                {% endfor %}
+              </div>
+              {% endif %}
+              {% if mentor_profile.seeking_topics %}
+              <p style="margin-bottom: 0.5rem;"><strong>Wants to learn:</strong></p>
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
+                {% for topic in mentor_profile.get_seeking_topics_list %}
+                <span style="background: var(--color-dark); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.8rem; color: var(--color-gray);">{{ topic }}</span>
+                {% endfor %}
+              </div>
+              {% endif %}
+              {% if mentor_profile.experience %}
+              <p style="margin-top: 0.5rem; color: var(--color-gray); font-size: 0.9rem;">{{ mentor_profile.experience|truncatewords:30 }}</p>
+              {% endif %}
+              {% if request.user != user %}
+              <a href="{% url 'conversation' user.id %}" class="btn btn--main btn--pill" style="margin-top: 0.75rem;">Message about Mentorship</a>
+              {% endif %}
+            </div>
+            {% endif %}
+          </div>
+
+          <div class="roomList__header">
+            <div>
+              <h2>Posts by {{user.name|default:user.username}}</h2>
             </div>
           </div>
-          <div class="profile__info">
-            <h3>{{user.username}}</h3>
-            <p>@{{user.username}}</p>
-            {% if request.user == user %}
-            <a href="{% url 'update-user' %}" class="btn btn--main btn--pill">Edit Profile</a>
-            {% endif %}
-          </div>
-
-          {% if request.user == user %}
-          <div class="profile__about">
-            <h3>Demo Paid Access</h3>
-            {% if request.user.is_paid %}
-              <p>Enabled: You can access Jobs & Referrals.</p>
-              <form action="{% url 'demo-unsubscribe' %}" method="POST">
-                {% csrf_token %}
-                <button class="btn btn--dark btn--pill" type="submit">Disable Demo Access</button>
-              </form>
-            {% else %}
-              <p>Enable demo access to view/post/comment in Jobs & Referrals.</p>
-              <form action="{% url 'demo-subscribe' %}" method="POST">
-                {% csrf_token %}
-                <button class="btn btn--main btn--pill" type="submit">Enable Demo Access</button>
-              </form>
-            {% endif %}
-          </div>
-          {% endif %}
-          <div class="profile__about">
-            <h3>About</h3>
-            <p>
-              {{user.bio}}
-            </p>
-          </div>
+          {% include 'base/feed_component.html' %}
         </div>
-
-        <div class="roomList__header">
-          <div>
-            <h2>Jobs Created by {{user.name}}</a>
-            </h2>
-          </div>
-        </div>
-        {% include 'base/feed_component.html' %}
       </div>
-      <!-- Room List End -->
+      <!-- Profile Content End -->
 
-      <!-- Activities Start -->
-      {% include 'base/activity_component.html' %}
-      <!-- Activities End -->
+      <!-- Sidebar Start -->
+      {% if not request.user.is_authenticated or not request.user.is_paid %}
+      <div class="profile-layout__sidebar">
+        <div class="ad-card">
+          <div class="ad-card__label">Sponsored</div>
+          <div class="ad-card__image">
+            <span>🎓</span>
+          </div>
+          <h3>Premium Career Coaching</h3>
+          <p>Get personalized career guidance from industry experts.</p>
+          <a href="#" class="btn btn--main btn--pill">Learn More</a>
+        </div>
+
+        <div class="ad-card">
+          <div class="ad-card__label">Sponsored</div>
+          <div class="ad-card__image" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);">
+            <span>💼</span>
+          </div>
+          <h3>Resume Builder Pro</h3>
+          <p>Create stunning resumes in minutes.</p>
+          <a href="#" class="btn btn--main btn--pill">Try Free</a>
+        </div>
+      </div>
+      {% endif %}
+      <!-- Sidebar End -->
+
     </div>
   </main>
 {% endblock content %}

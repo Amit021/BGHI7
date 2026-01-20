@@ -1,0 +1,163 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<style>
+  .start-conversation {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+
+  .start-conversation__header {
+    margin-bottom: 30px;
+  }
+
+  .start-conversation__header h1 {
+    color: var(--color-light);
+    margin-bottom: 10px;
+  }
+
+  .start-conversation__header p {
+    color: var(--color-gray);
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-gray);
+    text-decoration: none;
+    margin-bottom: 20px;
+    transition: color 0.2s;
+  }
+
+  .back-link:hover {
+    color: var(--color-main);
+  }
+
+  .search-form {
+    margin-bottom: 30px;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 15px 20px;
+    border-radius: 25px;
+    border: none;
+    background: var(--color-dark-medium);
+    color: var(--color-light);
+    font-size: 1rem;
+    outline: none;
+  }
+
+  .search-input:focus {
+    box-shadow: 0 0 0 2px var(--color-main);
+  }
+
+  .user-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .user-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 20px;
+    background: var(--color-dark-medium);
+    border-radius: 12px;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .user-item:hover {
+    background: var(--color-dark-light);
+  }
+
+  .user-item__avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .user-item__info {
+    flex: 1;
+  }
+
+  .user-item__name {
+    color: var(--color-light);
+    font-weight: 600;
+    margin-bottom: 3px;
+  }
+
+  .user-item__meta {
+    color: var(--color-gray);
+    font-size: 0.85rem;
+  }
+
+  .user-item__action {
+    color: var(--color-main);
+    font-weight: 500;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--color-gray);
+  }
+
+  .section-label {
+    color: var(--color-gray);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+  }
+</style>
+
+<main class="start-conversation">
+  <a href="{% url 'inbox' %}" class="back-link">← Back to Inbox</a>
+  
+  <div class="start-conversation__header">
+    <h1>✉️ New Message</h1>
+    <p>Select a user to start a conversation</p>
+  </div>
+
+  <form class="search-form" method="GET" action="">
+    <input 
+      type="text" 
+      name="q" 
+      class="search-input" 
+      placeholder="Search by name or username..." 
+      value="{{ search_query }}"
+      autocomplete="off"
+    >
+  </form>
+
+  {% if users %}
+  <div class="section-label">{% if search_query %}Search Results{% else %}All Members{% endif %}</div>
+  <div class="user-list">
+    {% for user in users %}
+    <a href="{% url 'conversation' user.id %}" class="user-item">
+      <img src="{{ user.avatar.url }}" alt="{{ user.username }}" class="user-item__avatar">
+      <div class="user-item__info">
+        <div class="user-item__name">{{ user.name|default:user.username }}</div>
+        <div class="user-item__meta">@{{ user.username }} · {{ user.affiliation|default:"Member" }}</div>
+      </div>
+      <span class="user-item__action">Message →</span>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    {% if search_query %}
+    <p>No users found matching "{{ search_query }}"</p>
+    {% else %}
+    <p>No other users available to message</p>
+    {% endif %}
+  </div>
+  {% endif %}
+</main>
+{% endblock %}

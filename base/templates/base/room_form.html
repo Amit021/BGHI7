@@ -6,7 +6,7 @@
       <div class="layout__box">
         <div class="layout__boxHeader">
           <div class="layout__boxTitle">
-            <a href="{% url 'home' %}">
+            <a href="{% if is_study_category %}/home/?category=study{% else %}{% url 'home' %}{% endif %}">
               <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
                 <title>arrow-left</title>
                 <path
@@ -14,46 +14,31 @@
                 </path>
               </svg>
             </a>
-            <h3>Create/Update Post</h3>
+            <h3>{% if is_study_category %}Share Study Material{% else %}Create/Update Post{% endif %}</h3>
           </div>
         </div>
         <div class="layout__body">
-          <form class="form" action="" method="POST">
+          <form class="form" action="" method="POST" {% if is_study_category %}enctype="multipart/form-data"{% endif %}>
             {% csrf_token %}
-            
-            <div class="form__group">
-              <label for="room_topic">Category</label>
-              <select required id="room_topic" name="topic">
-                <option value="" disabled {% if not room.topic %}selected{% endif %}>Select a category</option>
-                {% for topic in topics %}
-                  <option value="{{topic.id}}" {% if room.topic.id == topic.id %}selected{% endif %}>{{topic.name}}</option>
-                {% endfor %}
-              </select>
-            </div>
 
             <div class="form__group">
-              <label for="room_name">Post Title</label>
-              <input required id="room_name" name="name" type="text" value="{{room.name}}" placeholder="Write a short title" />
-            </div>
-
-            <div class="form__group">
-              <label for="room_description">Post Body</label>
-              <textarea id="room_description" name="description" rows="8" placeholder="Write details...">{{room.description}}</textarea>
+              <label for="room_description">{% if is_study_category %}Describe the study material{% else %}What's on your mind?{% endif %}</label>
+              <textarea required id="room_description" name="description" rows="8" placeholder="{% if is_study_category %}E.g., 'Calculus midterm notes with solved examples...'{% else %}Share your thoughts...{% endif %}">{{room.description}}</textarea>
             </div>
             
-             <!--<div class="form__group">
-              <label for="room_description">Job Description</label>
-              {{form.description}}
-            </div>
-            
-
-
+            {% if is_study_category %}
             <div class="form__group">
-              <label for="room_about">Job Description</label>
-              <textarea name="room_about" id="room_about" placeholder="Write complete job description..."></textarea>
-            </div> -->
+              <label for="attachment">📎 Attach File (PDF or Word, max 10MB)</label>
+              <input type="file" id="attachment" name="attachment" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="background: var(--color-dark); padding: 1rem; border-radius: 8px; width: 100%;" />
+              <p style="color: var(--color-gray); font-size: 0.85rem; margin-top: 0.5rem;">Optional: Share PDFs, Word docs, or other study materials</p>
+            </div>
+            <div class="form__group" style="background: var(--color-dark); padding: 1rem; border-radius: 8px;">
+              <p style="color: var(--color-gray); font-size: 0.9rem;">💡 <strong>Tip:</strong> You can also share links in the description or comments. Links will be automatically clickable!</p>
+            </div>
+            {% endif %}
+            
             <div class="form__action">
-              <a class="btn btn--dark" href="{% url 'home'%}">Cancel</a>
+              <a class="btn btn--dark" href="{% if is_study_category %}/home/?category=study{% else %}{% url 'home'%}{% endif %}">Cancel</a>
               <button class="btn btn--main" type="submit">Submit</button>
             </div>
           </form>

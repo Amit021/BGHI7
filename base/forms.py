@@ -2,7 +2,7 @@ from django.forms import ModelForm
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.conf import settings
-from .models import Room, User
+from .models import Room, User, MentorProfile
 from .models import InvitationCode
 
 
@@ -101,3 +101,21 @@ class UserForm(ModelForm):
 
         # Avatar should be optional too (usually)
         self.fields['avatar'].required = False
+
+
+class MentorProfileForm(ModelForm):
+    class Meta:
+        model = MentorProfile
+        fields = ['is_available_as_mentor', 'is_seeking_mentor', 'mentor_topics', 'seeking_topics', 'experience']
+        widgets = {
+            'mentor_topics': forms.Textarea(attrs={'rows': 2, 'placeholder': 'e.g., Python, Machine Learning, Career Advice'}),
+            'seeking_topics': forms.Textarea(attrs={'rows': 2, 'placeholder': 'e.g., Data Science, Interview Prep'}),
+            'experience': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Brief description of your background and expertise'}),
+        }
+        labels = {
+            'is_available_as_mentor': 'I am available as a mentor',
+            'is_seeking_mentor': 'I am looking for a mentor',
+            'mentor_topics': 'Topics I can mentor on (comma separated)',
+            'seeking_topics': 'Topics I want to learn about (comma separated)',
+            'experience': 'My experience/background',
+        }

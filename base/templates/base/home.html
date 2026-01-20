@@ -1,57 +1,432 @@
 {% extends 'main.html' %}
 
 {% block content %}
-    
-<main class="layout layout--3">
-  <div class="container">
-     
-    <!-- Topics Start -->
-    {% include 'base/topics_component.html' %}
 
-      <!-- Topics End -->
+<style>
+  .home-layout {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    width: 95%;
+    max-width: 1600px;
+    margin: 2rem auto;
+  }
+
+  .home-layout__main {
+    flex: 0 0 60%;
+  }
+
+  .home-layout__sidebar {
+    flex: 0 0 25%;
+  }
+
+  .ad-card {
+    background: var(--color-dark-medium);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .ad-card__label {
+    font-size: 0.75rem;
+    color: var(--color-gray);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+  }
+
+  .ad-card__image {
+    width: 100%;
+    height: 180px;
+    background: linear-gradient(135deg, var(--color-main) 0%, #667eea 100%);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+  }
+
+  .ad-card__image span {
+    font-size: 3rem;
+  }
+
+  .ad-card h3 {
+    color: var(--color-light);
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+  }
+
+  .ad-card p {
+    color: var(--color-gray);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 15px;
+  }
+
+  .ad-card .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Mentorship Styles */
+  .mentorship-section {
+    background: var(--color-dark-medium);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .mentorship-section__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .mentorship-section__header h3 {
+    color: var(--color-light);
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .mentorship-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-dark-light);
+    padding-bottom: 1rem;
+  }
+
+  .mentorship-tab {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    background: var(--color-dark);
+    color: var(--color-gray);
+    cursor: pointer;
+    border: none;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+  }
+
+  .mentorship-tab:hover,
+  .mentorship-tab.active {
+    background: var(--color-main);
+    color: white;
+  }
+
+  .mentor-card {
+    background: var(--color-dark);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .mentor-card__avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .mentor-card__info {
+    flex: 1;
+  }
+
+  .mentor-card__name {
+    color: var(--color-light);
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .mentor-card__name a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .mentor-card__name a:hover {
+    color: var(--color-main);
+  }
+
+  .mentor-card__affiliation {
+    font-size: 0.8rem;
+    color: var(--color-gray);
+    margin-bottom: 0.5rem;
+  }
+
+  .mentor-card__topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .mentor-card__topic {
+    background: var(--color-main-light);
+    color: var(--color-main);
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+  }
+
+  .mentor-card__experience {
+    font-size: 0.85rem;
+    color: var(--color-gray);
+    line-height: 1.4;
+  }
+
+  .mentor-card__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .mentorship-empty {
+    text-align: center;
+    padding: 2rem;
+    color: var(--color-gray);
+  }
+
+  .mentorship-empty svg {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+
+  .mentorship-profile-cta {
+    background: linear-gradient(135deg, var(--color-main) 0%, #667eea 100%);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .mentorship-profile-cta h3 {
+    color: white;
+    margin-bottom: 0.5rem;
+  }
+
+  .mentorship-profile-cta p {
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 1rem;
+  }
+
+  .mentorship-profile-cta .btn {
+    background: white;
+    color: var(--color-main);
+  }
+
+  @media (max-width: 900px) {
+    .home-layout {
+      flex-direction: column;
+    }
+    .home-layout__main,
+    .home-layout__sidebar {
+      flex: 1 1 100%;
+    }
+  }
+</style>
+    
+<main class="layout">
+  <div class="home-layout">
 
       <!-- Room List Start -->
-      <div class="roomList">
-        <div class="mobile-menu">
-          <form action="{% url 'home' %}" method="GET" class="header__search">
-            <label>
+      <div class="home-layout__main">
+        <div class="roomList">
+          <div class="mobile-menu">
+            <form action="{% url 'home' %}" method="GET" class="header__search">
+              <label>
+                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                  <title>search</title>
+                  <path
+                    d="M32 30.586l-10.845-10.845c1.771-2.092 2.845-4.791 2.845-7.741 0-6.617-5.383-12-12-12s-12 5.383-12 12c0 6.617 5.383 12 12 12 2.949 0 5.649-1.074 7.741-2.845l10.845 10.845 1.414-1.414zM12 22c-5.514 0-10-4.486-10-10s4.486-10 10-10c5.514 0 10 4.486 10 10s-4.486 10-10 10z"
+                  ></path>
+                </svg>
+                <input name="q" placeholder="Search for posts" />
+              </label>
+            </form>
+          </div>
+          <div class="roomList__header"> 
+            <div>
+              {% if current_category %}
+              <h2>{{ current_category }}</h2>
+              <p>{{room_count}} posts in this category</p>
+              <a href="{% url 'landing' %}" style="color: var(--color-main); font-size: 0.9rem;">← Back to categories</a>
+              {% else %}
+              <h2>POSTS</h2>
+              <p>{{room_count}} posts</p>
+              <a href="{% url 'landing' %}" style="color: var(--color-main); font-size: 0.9rem;">← Back to categories</a>
+              {% endif %}
+            </div>
+            {% if is_study_category %}
+            <a class="btn btn--main" href="{% url 'create-room' %}?category=study">
               <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-                <title>search</title>
+                <title>add</title>
                 <path
-                  d="M32 30.586l-10.845-10.845c1.771-2.092 2.845-4.791 2.845-7.741 0-6.617-5.383-12-12-12s-12 5.383-12 12c0 6.617 5.383 12 12 12 2.949 0 5.649-1.074 7.741-2.845l10.845 10.845 1.414-1.414zM12 22c-5.514 0-10-4.486-10-10s4.486-10 10-10c5.514 0 10 4.486 10 10s-4.486 10-10 10z"
+                  d="M16.943 0.943h-1.885v14.115h-14.115v1.885h14.115v14.115h1.885v-14.115h14.115v-1.885h-14.115v-14.115z"
                 ></path>
               </svg>
-              <input name="q" placeholder="Search for posts" />
-            </label>
-          </form>
-          <div class="mobile-menuItems">
-            <a class="btn btn--main btn--pill" href="{% url 'topics' %}">Browse Categories</a>
-            <a class="btn btn--main btn--pill" href="{% url 'activity' %}">Recent Activities</a>
+              Share Study Material
+            </a>
+            {% else %}
+            <a class="btn btn--main" href="{% url 'create-room' %}">
+              <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                <title>add</title>
+                <path
+                  d="M16.943 0.943h-1.885v14.115h-14.115v1.885h14.115v14.115h1.885v-14.115h14.115v-1.885h-14.115v-14.115z"
+                ></path>
+              </svg>
+              Create Post
+            </a>
+            {% endif %}
           </div>
-        </div>
-        <div class="roomList__header"> 
-          <div>
-            <h2>POSTS</h2>
-            <p>{{room_count}} posts</p>
-          </div>
-          <a class="btn btn--main" href="{% url 'create-room' %}">
-            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-              <title>add</title>
-              <path
-                d="M16.943 0.943h-1.885v14.115h-14.115v1.885h14.115v14.115h1.885v-14.115h14.115v-1.885h-14.115v-14.115z"
-              ></path>
-            </svg>
-            Create Post
-          </a>
-        </div>
-        {% include 'base/feed_component.html' %}
 
+          {% if is_mentorship_category %}
+          <!-- Mentorship Profile CTA -->
+          <div class="mentorship-profile-cta">
+            <h3>🤝 Connect with Mentors & Mentees</h3>
+            <p>Set up your mentorship profile to let others know you're available to mentor or looking for guidance</p>
+            <a href="{% url 'mentorship-profile' %}" class="btn">
+              {% if user_mentor_profile %}Edit My Profile{% else %}Create My Profile{% endif %}
+            </a>
+          </div>
+
+          <!-- Available Mentors Section -->
+          <div class="mentorship-section">
+            <div class="mentorship-section__header">
+              <h3>🎓 Available Mentors</h3>
+              <span style="color: var(--color-gray); font-size: 0.9rem;">{{ available_mentors.count }} mentor{{ available_mentors.count|pluralize }}</span>
+            </div>
+            
+            {% if available_mentors %}
+              {% for profile in available_mentors %}
+              <div class="mentor-card">
+                <img 
+                  src="{% if profile.user.avatar %}{{ profile.user.avatar.url }}{% else %}/images/avatar.svg{% endif %}" 
+                  alt="{{ profile.user.name }}" 
+                  class="mentor-card__avatar"
+                >
+                <div class="mentor-card__info">
+                  <div class="mentor-card__name">
+                    <a href="{% url 'user-profile' profile.user.id %}">{{ profile.user.name|default:profile.user.username }}</a>
+                  </div>
+                  <div class="mentor-card__affiliation">{{ profile.user.get_affiliation_display }}</div>
+                  {% if profile.mentor_topics %}
+                  <div class="mentor-card__topics">
+                    {% for topic in profile.get_mentor_topics_list %}
+                    <span class="mentor-card__topic">{{ topic }}</span>
+                    {% endfor %}
+                  </div>
+                  {% endif %}
+                  {% if profile.experience %}
+                  <div class="mentor-card__experience">{{ profile.experience|truncatewords:25 }}</div>
+                  {% endif %}
+                </div>
+                <div class="mentor-card__actions">
+                  <a href="{% url 'conversation' profile.user.id %}" class="btn btn--main btn--pill" style="font-size: 0.85rem;">Message</a>
+                </div>
+              </div>
+              {% endfor %}
+            {% else %}
+              <div class="mentorship-empty">
+                <p>No mentors available yet. Be the first to offer your guidance!</p>
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- People Seeking Mentors Section -->
+          <div class="mentorship-section">
+            <div class="mentorship-section__header">
+              <h3>🔍 Looking for Mentors</h3>
+              <span style="color: var(--color-gray); font-size: 0.9rem;">{{ seeking_mentors.count }} mentee{{ seeking_mentors.count|pluralize }}</span>
+            </div>
+            
+            {% if seeking_mentors %}
+              {% for profile in seeking_mentors %}
+              <div class="mentor-card">
+                <img 
+                  src="{% if profile.user.avatar %}{{ profile.user.avatar.url }}{% else %}/images/avatar.svg{% endif %}" 
+                  alt="{{ profile.user.name }}" 
+                  class="mentor-card__avatar"
+                >
+                <div class="mentor-card__info">
+                  <div class="mentor-card__name">
+                    <a href="{% url 'user-profile' profile.user.id %}">{{ profile.user.name|default:profile.user.username }}</a>
+                  </div>
+                  <div class="mentor-card__affiliation">{{ profile.user.get_affiliation_display }}</div>
+                  {% if profile.seeking_topics %}
+                  <div class="mentor-card__topics">
+                    {% for topic in profile.get_seeking_topics_list %}
+                    <span class="mentor-card__topic">{{ topic }}</span>
+                    {% endfor %}
+                  </div>
+                  {% endif %}
+                  {% if profile.experience %}
+                  <div class="mentor-card__experience">{{ profile.experience|truncatewords:25 }}</div>
+                  {% endif %}
+                </div>
+                <div class="mentor-card__actions">
+                  <a href="{% url 'conversation' profile.user.id %}" class="btn btn--main btn--pill" style="font-size: 0.85rem;">Message</a>
+                </div>
+              </div>
+              {% endfor %}
+            {% else %}
+              <div class="mentorship-empty">
+                <p>No one looking for mentors yet.</p>
+              </div>
+            {% endif %}
+          </div>
+
+          <h3 style="color: var(--color-light); margin: 2rem 0 1rem;">📝 Mentorship Posts</h3>
+          {% endif %}
+
+          {% include 'base/feed_component.html' %}
+        </div>
       </div>
       <!-- Room List End -->
-      {% include 'base/activity_component.html' %}
-      <!-- Activities Start -->
 
-      <!-- Activities End -->
+      <!-- Sidebar Ads Start -->
+      {% if not request.user.is_authenticated or not request.user.is_paid %}
+      <div class="home-layout__sidebar">
+        <div class="ad-card">
+          <div class="ad-card__label">Sponsored</div>
+          <div class="ad-card__image">
+            <span>🎓</span>
+          </div>
+          <h3>Premium Career Coaching</h3>
+          <p>Get personalized career guidance from industry experts. Land your dream job faster!</p>
+          <a href="#" class="btn btn--main btn--pill">Learn More</a>
+        </div>
+
+        <div class="ad-card">
+          <div class="ad-card__label">Sponsored</div>
+          <div class="ad-card__image" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);">
+            <span>💼</span>
+          </div>
+          <h3>Resume Builder Pro</h3>
+          <p>Create stunning resumes in minutes. Stand out from the competition with professional templates.</p>
+          <a href="#" class="btn btn--main btn--pill">Try Free</a>
+        </div>
+
+        <div class="ad-card">
+          <div class="ad-card__label">Sponsored</div>
+          <div class="ad-card__image" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+            <span>📚</span>
+          </div>
+          <h3>Online Courses</h3>
+          <p>Learn new skills with our curated courses. From coding to business, we've got you covered.</p>
+          <a href="#" class="btn btn--main btn--pill">Browse Courses</a>
+        </div>
+      </div>
+      {% endif %}
+      <!-- Sidebar Ads End -->
+
   </div>
 </main>
 {% endblock %}
