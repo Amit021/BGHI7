@@ -100,18 +100,18 @@
 
             {% if request.user == user %}
             <div class="profile__about">
-              <h3>Demo Paid Access</h3>
+              <h3>Premium Access</h3>
               {% if request.user.is_paid %}
                 <p>Enabled: You can access Jobs & Referrals.</p>
                 <form action="{% url 'demo-unsubscribe' %}" method="POST">
                   {% csrf_token %}
-                  <button class="btn btn--dark btn--pill" type="submit">Disable Demo Access</button>
+                  <button class="btn btn--dark btn--pill" type="submit">Disable Premium Access</button>
                 </form>
               {% else %}
-                <p>Enable demo access to view/post/comment in Jobs & Referrals.</p>
+                <p>Enable premium access to view/post/comment in Jobs & Referrals.</p>
                 <form action="{% url 'demo-subscribe' %}" method="POST">
                   {% csrf_token %}
-                  <button class="btn btn--main btn--pill" type="submit">Enable Demo Access</button>
+                  <button class="btn btn--main btn--pill" type="submit">Enable Premium Access</button>
                 </form>
               {% endif %}
             </div>

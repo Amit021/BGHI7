@@ -113,7 +113,7 @@ def home(request):
     category = request.GET.get('category') if request.GET.get('category') is not None else ''
 
     if topic_slug == JOBS_REFERRALS_SLUG and not _user_can_access_jobs_referrals(request.user):
-        messages.error(request, 'Jobs & Referrals is a demo paid category. Enable demo access to view it.')
+        messages.error(request, 'Jobs & Referrals is a premium category. Enable premium access to view it.')
         return redirect('home')
 
     rooms = Room.objects.all()
@@ -180,7 +180,7 @@ def room(request, pk):
     room = Room.objects.get(id=pk)
 
     if getattr(room.topic, 'slug', None) == JOBS_REFERRALS_SLUG and not _user_can_access_jobs_referrals(request.user):
-        messages.error(request, 'Jobs & Referrals is a demo paid category. Enable demo access to view and comment.')
+        messages.error(request, 'Jobs & Referrals is a premium category. Enable premium access to view and comment.')
         return redirect('home')
 
     score = room.votes.aggregate(score=Coalesce(Sum('value'), 0))['score']
@@ -188,7 +188,7 @@ def room(request, pk):
     participants = room.participants.all()
     if request.method == 'POST':
         if getattr(room.topic, 'slug', None) == JOBS_REFERRALS_SLUG and not _user_can_access_jobs_referrals(request.user):
-            messages.error(request, 'Demo paid access is required to comment in Jobs & Referrals.')
+            messages.error(request, 'Premium access is required to comment in Jobs & Referrals.')
             return redirect('home')
         
         # Handle file attachment for Study Materials comments
@@ -328,7 +328,7 @@ def updateRoom(request, pk):
             return render(request, 'base/room_form.html', {'form': form, 'topics': topics, 'room': room})
 
         if topic.slug == JOBS_REFERRALS_SLUG and not _user_can_access_jobs_referrals(request.user):
-            messages.error(request, 'Demo paid access is required to post in Jobs & Referrals.')
+            messages.error(request, 'Premium access is required to post in Jobs & Referrals.')
             return render(request, 'base/room_form.html', {'form': form, 'topics': topics, 'room': room})
         room.name = request.POST.get('name')
         room.topic = topic
@@ -406,7 +406,7 @@ def voteRoom(request, pk):
     room = Room.objects.get(id=pk)
 
     if getattr(room.topic, 'slug', None) == JOBS_REFERRALS_SLUG and not _user_can_access_jobs_referrals(request.user):
-        messages.error(request, 'Demo paid access is required for Jobs & Referrals.')
+        messages.error(request, 'Premium access is required for Jobs & Referrals.')
         return redirect('home')
 
     direction = request.POST.get('direction')
@@ -437,7 +437,7 @@ def demoSubscribe(request):
         return redirect('user-profile', pk=request.user.id)
     request.user.is_paid = True
     request.user.save(update_fields=['is_paid'])
-    messages.success(request, 'Demo paid access enabled. You can now access Jobs & Referrals.')
+    messages.success(request, 'Premium access enabled. You can now access Jobs & Referrals.')
     return redirect('user-profile', pk=request.user.id)
 
 
@@ -447,7 +447,7 @@ def demoUnsubscribe(request):
         return redirect('user-profile', pk=request.user.id)
     request.user.is_paid = False
     request.user.save(update_fields=['is_paid'])
-    messages.success(request, 'Demo paid access disabled.')
+    messages.success(request, 'Premium access disabled.')
     return redirect('user-profile', pk=request.user.id)
 
 

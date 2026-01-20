@@ -34,6 +34,6 @@ def getRooms(request):
 def getRoom(request, pk):
     room = Room.objects.get(id=pk)
     if getattr(room.topic, 'slug', None) == JOBS_REFERRALS_SLUG and not getattr(request.user, 'is_paid', False):
-        return Response({'detail': 'Demo paid access required for Jobs & Referrals.'}, status=status.HTTP_403_FORBIDDEN)
+        return Response({'detail': 'Premium access required for Jobs & Referrals.'}, status=status.HTTP_403_FORBIDDEN)
     serializer = RoomSerializer(room, many=False)
     return Response(serializer.data)
