@@ -11,5 +11,8 @@ fi
 
 python manage.py migrate --noinput
 
-echo "BGHI7 is ready. Run:"
-echo "  python manage.py runserver 0.0.0.0:8000"
+# Copy VS Code tasks for auto-start
+mkdir -p .vscode
+cp .devcontainer/tasks.json .vscode/tasks.json
+
+echo "BGHI7 is ready. The Django server will start automatically."
