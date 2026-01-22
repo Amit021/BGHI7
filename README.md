@@ -2,6 +2,18 @@
 
 University-only community app (students + alumni) built with Django.
 
+## Run in GitHub Codespaces
+
+This project can be run directly in GitHub Codespaces.
+
+- (Optional) Load demo users and sample posts/comments:
+  - `python manage.py seed_demo_data --yes`
+
+- Start the Django development server:
+  - `python manage.py runserver`
+
+Once running, open the forwarded application URL from the Codespaces **Ports** tab (you can open it in a new browser tab).
+
 ## Requirements
 
 - Python 3.10+ (recommended)
