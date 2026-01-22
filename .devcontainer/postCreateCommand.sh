@@ -11,15 +11,7 @@ fi
 
 python manage.py migrate --noinput
 
-# Copy VS Code tasks for auto-start
-mkdir -p .vscode
-cp .devcontainer/tasks.json .vscode/tasks.json
+# Make start script executable
+chmod +x .devcontainer/startServer.sh
 
-# Create .vscode/settings.json to allow automatic tasks
-cat > .vscode/settings.json <<EOF
-{
-  "task.allowAutomaticTasks": "on"
-}
-EOF
-
-echo "BGHI7 is ready. The Django server will start automatically when the workspace opens."
+echo "✅ BGHI7 setup complete. Django server will start automatically."
