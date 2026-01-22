@@ -2,7 +2,6 @@
   "name": "BGHI7 Django (Codespaces)",
   "image": "mcr.microsoft.com/devcontainers/python:3.12",
   "postCreateCommand": "bash .devcontainer/postCreateCommand.sh",
-  "postStartCommand": "nohup python manage.py runserver 0.0.0.0:8000 > /tmp/django.log 2>&1 &",
   "forwardPorts": [8000],
   "portsAttributes": {
     "8000": {
@@ -17,7 +16,8 @@
         "ms-python.vscode-pylance"
       ],
       "settings": {
-        "python.defaultInterpreterPath": "/usr/local/bin/python"
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "task.allowAutomaticTasks": "on"
       }
     }
   }
