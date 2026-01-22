@@ -15,4 +15,11 @@ python manage.py migrate --noinput
 mkdir -p .vscode
 cp .devcontainer/tasks.json .vscode/tasks.json
 
-echo "BGHI7 is ready. The Django server will start automatically."
+# Create .vscode/settings.json to allow automatic tasks
+cat > .vscode/settings.json <<EOF
+{
+  "task.allowAutomaticTasks": "on"
+}
+EOF
+
+echo "BGHI7 is ready. The Django server will start automatically when the workspace opens."

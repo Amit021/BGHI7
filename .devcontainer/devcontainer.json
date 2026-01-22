@@ -17,8 +17,10 @@
       ],
       "settings": {
         "python.defaultInterpreterPath": "/usr/local/bin/python",
-        "task.allowAutomaticTasks": "on"
+        "task.allowAutomaticTasks": "on",
+        "task.autoDetect": "off"
       }
     }
-  }
+  },
+  "postStartCommand": "nohup python manage.py runserver 0.0.0.0:8000 > /tmp/django.log 2>&1 &"
 }
