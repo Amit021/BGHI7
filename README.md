@@ -33,9 +33,21 @@ Once setup is complete:
 Use these pre-seeded accounts to test the application:
 
 | Role    | Email                | Password     |
-|---------|-------|--------------|
+|---------|----------------------|--------------|
 | Student | `student1@th-deg.de` | `student123` |
 | Alumni  | `alumni1@gmail.com`  | `alumni123`  |
+
+### Invitation Codes (For Testing Registration)
+
+To test user registration:
+
+- **Students**: Can register with university emails (`@th-deg.de`, `@stud.th-deg.de`, `@thi.de`, `@stud.thi.de`) - no invitation code required
+- **Alumni**: Must use a valid invitation code to register with non-university emails
+
+| Invitation Code  | Status       | Use Case                             |
+|------------------|--------------|--------------------------------------|
+| `ALUMNI2025`     | Active       | Use this to register as a new alumni |
+| `ALUMNI2025USED` | Already Used | Tests "code already used" validation |
 
 ### Features to Test
 
@@ -165,7 +177,7 @@ The pipeline is defined in [Jenkinsfile](Jenkinsfile) and consists of 5 stages:
 
 ```
 ┌─────────────┐    ┌─────────────┐    ┌───────────────┐    ┌─────────────────┐    ┌─────────────┐
-│  Checkout   │ -> │ Setup venv  │ -> │ Django checks │ -> │ Tests + Coverage│ -> │   Deploy    │
+│  Checkout   │ -> │ Setup venv  │ -> │ Django checks │ -> │ Tests + Coverage│ -> │   Deploy  │
 └─────────────┘    └─────────────┘    └───────────────┘    └─────────────────┘    └─────────────┘
 ```
 
