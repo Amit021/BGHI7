@@ -2,7 +2,7 @@
 
 University-only community app (students + alumni) built with Django.
 
-## Quick Start: Run in GitHub Codespaces (For Examiners/Testers)
+## Quick Start: Run in GitHub Codespaces 
 
 The easiest way to test this application is using GitHub Codespaces - no local setup required!
 
@@ -165,7 +165,7 @@ The pipeline is defined in [Jenkinsfile](Jenkinsfile) and consists of 5 stages:
 
 ```
 ┌─────────────┐    ┌─────────────┐    ┌───────────────┐    ┌─────────────────┐    ┌─────────────┐
-│  Checkout   │ -> │ Setup venv  │ -> │ Django checks │ -> │ Tests + Coverage│  -> │      Deploy      │
+│  Checkout   │ -> │ Setup venv  │ -> │ Django checks │ -> │ Tests + Coverage│ -> │   Deploy    │
 └─────────────┘    └─────────────┘    └───────────────┘    └─────────────────┘    └─────────────┘
 ```
 
